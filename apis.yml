@@ -1,0 +1,60 @@
+name: Formboost
+description: >-
+  Form-backend-as-a-service with a single unauthenticated HTTP POST submission endpoint for any frontend or static site.
+  Submissions land in an inbox and searchable dashboard and can fan out to Google Sheets, email, Slack, Discord,
+  Telegram, Zapier, n8n, and webhooks. No backend code, server, or database required.
+url: https://raw.githubusercontent.com/api-evangelist/formboost/refs/heads/main/apis.yml
+created: '2026-09-02'
+modified: '2026-09-02'
+specificationVersion: '0.21'
+tags:
+  - forms
+  - form-backend
+  - html-forms
+  - serverless
+  - static-sites
+  - react
+  - nextjs
+  - vue
+  - webhooks
+  - no-code
+  - developer-tools
+  - spam-filtering
+apis:
+  - name: Formboost Form Submission API
+    description: >-
+      Single public unauthenticated HTTP endpoint (POST https://formboost.app/f/{alias}) that accepts JSON or
+      form-encoded submissions. Returns 202 to JSON clients and 302 to HTML form posts. Discovery via a confirmed
+      llms.txt.
+    humanURL: https://formboost.app/docs/api-reference-and-config
+    baseURL: https://formboost.app
+    tags:
+      - forms
+      - form-backend
+      - html-forms
+      - serverless
+      - static-sites
+      - react
+      - nextjs
+      - vue
+      - webhooks
+      - no-code
+      - developer-tools
+      - spam-filtering
+    properties:
+      - type: Documentation
+        url: https://formboost.app/docs
+      - type: Documentation
+        url: https://formboost.app/docs/api-reference-and-config
+      - type: LLMsTxt
+        url: https://formboost.app/llms.txt
+      - type: LLMsTxt
+        url: https://formboost.app/llms-full.txt
+maintainers:
+  - FN: Formboost
+    url: https://formboost.app
+generated:
+  by: apis.io/add
+  model: claude-opus-4-8
+  confidence: 95
+  at: '2026-09-02T12:26:45.044Z'
