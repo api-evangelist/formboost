@@ -1,0 +1,107 @@
+generated: '2026-09-02'
+method: probed
+source: >-
+  https://formboost.app/docs/api-reference-and-config (documented status table) and live
+  unauthenticated probes of https://formboost.app/f/{alias} on 2026-09-02
+format: custom-json-envelope
+rfc9457: false
+rfc9457_note: >-
+  Formboost does NOT use application/problem+json. Errors are returned as a bespoke JSON
+  envelope with content-type application/json. Recorded honestly rather than mapped onto
+  RFC 9457 shapes the provider does not emit.
+envelope:
+  content_type: application/json; charset=utf-8
+  fields:
+    - name: success
+      type: boolean
+      always_present: true
+      note: false on every error response.
+    - name: message
+      type: string
+      always_present: true
+      note: Human-readable description of what went wrong.
+    - name: name
+      type: string
+      always_present: true
+      note: >-
+        Stable UPPER_SNAKE_CASE machine code. This is the field an agent should branch on —
+        the llms.txt calls it out as the stable identifier, and `message` is prose that may change.
+    - name: hint
+      type: string
+      always_present: false
+      note: Remediation guidance, present on 4xx responses.
+    - name: documentation
+      type: string (url)
+      always_present: false
+      note: Deep link to the docs page describing the correct request shape.
+  example_observed:
+    request: GET https://formboost.app/f/nonexistent-probe-aeio
+    status: 404
+    body: >-
+      {"success":false,"message":"No route matches GET /f/nonexistent-probe-aeio",
+      "name":"ROUTE_NOT_FOUND","hint":"POST /f/{alias} is the only public endpoint on this host.
+      See the docs for the request shape.",
+      "documentation":"https://formboost.app/docs/api-reference-and-config"}
+    probed: '2026-09-02'
+problem_types:
+  - name: ROUTE_NOT_FOUND
+    status: 404
+    title: No route matches the request
+    detail: >-
+      The method/path combination is not served on formboost.app. Observed live on a GET to
+      /f/{alias} — the submission endpoint is POST-only.
+    remediation: >-
+      POST /f/{alias} is the only public endpoint on this host. Check the method and the path.
+    method: probed
+    evidence: live probe 2026-09-02
+  - name: null
+    status: 400
+    title: Bad request
+    detail: Missing required fields on the submission body.
+    remediation: Supply the fields the form declares as required.
+    method: searched
+    evidence: https://formboost.app/docs/api-reference-and-config (documented status table)
+  - name: null
+    status: 404
+    title: Endpoint not found
+    detail: Documented in the API reference status table as "Endpoint not found".
+    remediation: Verify the form alias in the dashboard.
+    method: searched
+    evidence: https://formboost.app/docs/api-reference-and-config
+    note: >-
+      DIVERGENCE WORTH KNOWING. The docs list 404 "Endpoint not found", but a live POST to a
+      non-existent alias returned 202 with {"success":true,"message":"Submission accepted for
+      processing"} — the endpoint does not reveal whether an alias exists. This looks like
+      deliberate anti-enumeration, and it means an agent CANNOT use the response status to
+      validate an alias. Recorded as observed; the docs and the deployed behaviour disagree.
+  - name: null
+    status: 429
+    title: Rate limited
+    detail: Too many requests from one IP against the public submission endpoint.
+    remediation: >-
+      Back off. The response carries RateLimit-Limit / RateLimit-Remaining / RateLimit-Reset —
+      read RateLimit-Reset for the seconds until the window rolls. See
+      rate-limits/formboost-rate-limits.yml for the probed policy.
+    method: searched
+    evidence: https://formboost.app/docs/api-reference-and-config
+  - name: null
+    status: 500
+    title: Internal server error
+    detail: Unexpected server-side failure.
+    remediation: Retry; if it persists contact support@formboost.app.
+    method: searched
+    evidence: https://formboost.app/docs/api-reference-and-config
+  - name: null
+    status: 406
+    title: Not Acceptable
+    detail: >-
+      Returned by the marketing/docs site when an Accept header requests a representation that is
+      not text/html or text/markdown. Body is text/plain and lists the available media types.
+    remediation: "Send `Accept: text/markdown`, `Accept: text/html`, or no Accept header."
+    method: probed
+    evidence: "live probe of https://formboost.app/docs with Accept: application/xml, 2026-09-02"
+tracing:
+  header: x-request-id
+  note: >-
+    Every response carries an x-request-id UUID, and on a 202 the same value is echoed in the
+    body as `requestId`. Quote it to support@formboost.app when reporting a failure.

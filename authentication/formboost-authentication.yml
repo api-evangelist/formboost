@@ -1,0 +1,92 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://formboost.app/docs/api-reference-and-config, https://formboost.app/security,
+  https://formboost.app/llms.txt, plus live probes of https://formboost.app/f/{alias} 2026-09-02
+summary: >-
+  The public Formboost surface is UNAUTHENTICATED by design. The only endpoint an external client
+  calls — POST https://formboost.app/f/{alias} — takes no key, no token and no header; the form
+  alias in the URL is the entire credential. Everything that requires an identity (creating
+  forms, reading submissions, configuring integrations) lives behind the dashboard, whose API is
+  not publicly documented and whose host answers 403 to anonymous requests.
+schemes:
+  - id: none
+    surface: POST https://formboost.app/f/{alias}
+    type: none
+    in: null
+    description: >-
+      No authentication. Anyone who knows a form's alias can post to it. This is the intended
+      model for a form backend — the endpoint sits in public HTML where any visitor can read it.
+    method: probed
+    evidence: >-
+      Live POST with no credentials on 2026-09-02 returned HTTP 202
+      {"success":true,"message":"Submission accepted for processing"}.
+  - id: dashboard-jwt
+    surface: dashboard.formboost.app / service.formboost.app
+    type: http
+    scheme: bearer
+    bearer_format: JWT
+    description: >-
+      "Dashboard access uses signed JWTs, and new accounts must verify their email address before
+      the API accepts a request from them."
+    public: false
+    method: searched
+    evidence: https://formboost.app/security
+  - id: firebase-identity
+    surface: dashboard.formboost.app
+    type: openIdConnect
+    provider: Google Firebase
+    description: >-
+      Sign-in is backed by Google Firebase; account records store "a bcrypt-hashed password or a
+      Firebase identity."
+    public: false
+    method: searched
+    evidence: https://formboost.app/security
+  - id: google-oauth-drive-file
+    surface: Google Sheets integration
+    type: oauth2
+    provider: Google
+    scopes:
+      - name: https://www.googleapis.com/auth/drive.file
+        description: >-
+          Per-file Drive access. Formboost states it requests ONLY drive.file, so it can reach
+          the spreadsheets it created and nothing else in the user's Drive.
+    description: >-
+      The one native OAuth connection Formboost operates. It is an outbound authorization the
+      customer grants to Formboost, not a way to authenticate INTO Formboost.
+    method: searched
+    evidence: https://formboost.app/llms.txt
+outbound_auth:
+  description: >-
+    For webhook delivery the direction of trust reverses: the customer supplies custom headers
+    (Authorization, X-API-Key, anything) that Formboost attaches to each delivery so the
+    receiving endpoint can authenticate it.
+  docs: https://formboost.app/docs/http-webhook
+  inbound_verification: false
+  inbound_verification_note: >-
+    Formboost does not sign deliveries. There is no HMAC header, so a consumer cannot verify
+    a payload came from Formboost. See asyncapi/formboost-webhooks.yml.
+oauth_scopes_artifact: false
+oauth_scopes_note: >-
+  No scopes/ artifact is written. The only OAuth in play is the outbound Google drive.file grant
+  recorded above; Formboost issues no tokens of its own and exposes no scope surface to consume.
+abuse_controls:
+  - control: per-IP rate limiting on the public endpoint
+    detail: 10 requests / 60s observed. See rate-limits/formboost-rate-limits.yml.
+    evidence: live probe 2026-09-02
+  - control: body size limit
+    detail: The public submission endpoint "rejects oversized bodies."
+    evidence: https://formboost.app/security
+  - control: spam screening before storage
+    detail: Heuristics on every plan; Gemini AI screening from Starter up.
+    evidence: https://formboost.app/security
+  - control: allowed origins
+    detail: >-
+      Per-endpoint allowed-origin configuration is offered in the dashboard, so a form alias can
+      be restricted to posting from the customer's own domains.
+    evidence: https://formboost.app/docs/api-reference-and-config
+  - control: non-enumerable aliases
+    detail: >-
+      A POST to a non-existent alias returns 202, not 404, so the endpoint does not confirm
+      whether an alias exists. Observed live 2026-09-02.
+    evidence: live probe 2026-09-02

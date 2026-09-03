@@ -1,0 +1,31 @@
+generated: '2026-09-02'
+method: searched
+source: https://formboost.app/llms.txt
+status: none
+note: >-
+  Formboost ships no MCP server and states so explicitly in its own llms.txt:
+  "There is no Formboost CLI, SDK or MCP server. Integration is the HTML form `action` or a
+  single `POST`, and nothing else is needed." No hosted endpoint, no stdio package, and nothing
+  in the GitHub org. No MCPServer pointer is emitted in apis.yml, because no server exists —
+  the pointer would assert an agent surface the provider does not operate.
+deployment:
+  mode: none
+  endpoint: null
+  install: null
+  package: null
+  auth: none
+  verified: searched
+searched:
+  - target: https://formboost.app/llms.txt
+    result: provider explicitly states no MCP server exists
+  - target: https://github.com/formboost
+    result: 8 repos, all documentation/examples — no MCP server implementation
+  - target: npm registry search "formboost"
+    result: 0 packages
+candidate_tools: []
+candidate_note: >-
+  No candidate tool list is derived. Deriving one would require an OpenAPI to ground it in, and
+  Formboost publishes no machine-readable contract. The one public operation
+  (POST https://formboost.app/f/{alias}) is documented in prose only; see
+  conventions/formboost-conventions.yml and errors/formboost-problem-types.yml for the
+  request/response shape captured from the docs and from live probes.

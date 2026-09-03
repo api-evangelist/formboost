@@ -1,0 +1,84 @@
+generated: '2026-09-02'
+method: probed
+source: >-
+  Live unauthenticated probes of https://formboost.app/f/{alias} on 2026-09-02, plus the
+  published plan quotas at https://formboost.app/pricing and the rate-limit statement at
+  https://formboost.app/security
+limit_count: 5
+response_headers:
+  standard: draft-ietf-httpapi-ratelimit-headers (RateLimit-*)
+  observed:
+    - header: RateLimit-Limit
+      example: '10'
+      note: Requests permitted in the current window.
+    - header: RateLimit-Policy
+      example: 10;w=60
+      note: Quota and window in seconds, in the draft RateLimit-Policy form.
+    - header: RateLimit-Remaining
+      example: '9'
+      note: Requests left in the current window.
+    - header: RateLimit-Reset
+      example: '60'
+      note: Seconds until the window resets.
+  retry_after: false
+  retry_after_note: >-
+    No Retry-After header was observed. An agent should read RateLimit-Reset instead.
+  status_on_exhaustion: 429
+  status_evidence: https://formboost.app/docs/api-reference-and-config
+  note: >-
+    These are the modern IETF draft RateLimit-* headers, not the legacy X-RateLimit-* family.
+    Emitting them on an anonymous endpoint is a genuinely good agent-readiness signal: a client
+    can pace itself without a key and without reading the docs.
+limits:
+  - scope: per-ip
+    surface: POST https://formboost.app/f/{alias}
+    window: 60s
+    limit: 10
+    burst: null
+    policy_header: 10;w=60
+    method: probed
+    evidence: >-
+      Live POST to https://formboost.app/f/nonexistent-probe-aeio on 2026-09-02 returned
+      202 with ratelimit-limit: 10, ratelimit-policy: 10;w=60, ratelimit-remaining: 9,
+      ratelimit-reset: 60.
+    note: The submission rate limit. Ten form posts per minute per source IP.
+  - scope: per-ip
+    surface: GET https://formboost.app/f/{alias} (non-POST methods on the endpoint host)
+    window: 1s
+    limit: 100
+    burst: null
+    policy_header: 100;w=1
+    method: probed
+    evidence: >-
+      Live GET to https://formboost.app/f/nonexistent-probe-aeio on 2026-09-02 returned
+      404 with ratelimit-limit: 100, ratelimit-policy: 100;w=1, ratelimit-reset: 1.
+    note: >-
+      A separate, much looser bucket applies to non-submission traffic on the same host.
+      Undocumented — observed only.
+  - scope: per-account
+    surface: submissions across all forms
+    window: 1 month
+    limit: 500
+    plan: Free
+    method: searched
+    evidence: https://formboost.app/pricing
+    note: Also capped at 10 forms on this plan.
+  - scope: per-account
+    surface: submissions across all forms
+    window: 1 month
+    limit: 5000
+    plan: Starter
+    method: searched
+    evidence: https://formboost.app/pricing
+  - scope: per-account
+    surface: submissions across all forms
+    window: 1 month
+    limit: 50000
+    plan: Pro
+    method: searched
+    evidence: https://formboost.app/pricing
+undocumented_note: >-
+  Formboost documents that the public endpoint "is rate limited per IP"
+  (https://formboost.app/security) but publishes no number anywhere in the docs. The per-IP
+  figures above were read off live response headers, not from documentation. The monthly
+  submission figures are published plan quotas.

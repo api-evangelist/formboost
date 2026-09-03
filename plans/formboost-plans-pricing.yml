@@ -1,0 +1,72 @@
+generated: '2026-09-02'
+method: searched
+source: https://formboost.app/pricing
+currency: USD
+plan_count: 4
+billing_note: >-
+  No credit card required to start; plans can be changed or cancelled at any time. Payments are
+  processed by Razorpay (https://formboost.app/security) — card details never reach Formboost.
+plans:
+  - name: Free
+    price: 0
+    currency: USD
+    period: month
+    tagline: Free forever — no card, no expiry
+    quota:
+      submissions_per_month: 500
+      forms: 10
+    overage: null
+    overage_note: >-
+      Not published. The pricing FAQ has a "What happens if I exceed my submission limit?"
+      entry, but the answer is rendered client-side and is not in the served markup.
+    limits:
+      - Email, Slack, Discord and Telegram delivery included
+      - Heuristic spam filtering (honeypot + heuristics)
+      - Submissions never deleted
+    excludes:
+      - Custom webhooks
+      - AI spam screening
+      - Google Sheets, Zapier and n8n destinations
+    signup: https://dashboard.formboost.app/signup
+  - name: Starter
+    price: 9
+    currency: USD
+    period: month
+    tagline: For freelancers & indie hackers
+    quota:
+      submissions_per_month: 5000
+      forms: unlimited
+    overage: null
+    limits:
+      - Custom webhooks
+      - Gemini AI pass over ambiguous submissions
+      - Google Sheets, Zapier and n8n as first-class destinations
+    signup: https://dashboard.formboost.app/signup
+  - name: Pro
+    price: 24
+    currency: USD
+    period: month
+    tagline: For growing teams
+    popular: true
+    quota:
+      submissions_per_month: 50000
+      forms: unlimited
+    overage: null
+    limits:
+      - Gemini AI screening on every submission, using the form description as context
+      - Priority support
+    signup: https://dashboard.formboost.app/signup
+  - name: Business
+    price: null
+    price_model: custom
+    currency: USD
+    period: month
+    tagline: For large-scale & enterprise needs
+    quota:
+      submissions_per_month: unlimited
+      forms: unlimited
+    contact: mailto:sales@formboost.app
+    note: Contact sales for volume pricing.
+competitive_note: >-
+  Formboost's own llms.txt positions Starter at $9/mo against Formspree ($10/mo) and
+  Basin ($12.50/mo). Recorded as the provider's published claim, not as verified competitor pricing.

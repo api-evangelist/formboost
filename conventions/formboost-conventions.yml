@@ -1,0 +1,226 @@
+generated: '2026-09-02'
+method: probed
+source: >-
+  https://formboost.app/docs/api-reference-and-config, https://formboost.app/docs/http-webhook,
+  https://formboost.app/security, https://formboost.app/llms.txt, plus live probes of
+  https://formboost.app on 2026-09-02
+scope_note: >-
+  Formboost's public API is a single unauthenticated endpoint. Several conventions that this
+  artifact normally records (pagination, expansion, sparse fieldsets, cursoring) have no
+  surface to apply to and are marked `na` rather than left blank — na is a fact, absent is not.
+auth_style:
+  public_surface: none
+  detail: >-
+    POST https://formboost.app/f/{alias} takes no credential. The alias is the capability.
+  see: authentication/formboost-authentication.yml
+base_url: https://formboost.app
+endpoint: POST /f/{alias}
+content_negotiation:
+  request_media_types:
+    - application/json
+    - application/x-www-form-urlencoded
+  rejected:
+    - multipart/form-data
+  rejected_note: >-
+    File uploads are not supported; multipart bodies are rejected. On the roadmap.
+  response_behaviour:
+    json_client: 202 Accepted with a JSON body
+    html_form_post: 302 redirect (to `_redirect` if supplied, else a hosted thank-you page)
+    detail: >-
+      The endpoint branches on how it was called. A fetch/XHR client gets 202 + JSON; a browser
+      form post gets a redirect. Confirmed live: a POST with an unsupported content-type
+      (text/plain) returned 302 to https://formboost.app/.
+  docs_site_negotiation:
+    supported: true
+    media_types: [text/html, text/markdown]
+    detail: >-
+      Every page on formboost.app serves Markdown to `Accept: text/markdown`, with
+      `Vary: Accept`. An unsatisfiable Accept returns 406 with a text/plain body listing the
+      available representations. This is a real and unusually complete agent affordance — a
+      crawler can read the whole site as clean Markdown with no HTML parsing.
+    verified: probed 2026-09-02
+response_envelope:
+  shape: '{ success: boolean, message: string, ... }'
+  success_example: '{"success":true,"message":"Submission accepted for processing","requestId":"<uuid>"}'
+  error_fields: [success, message, name, hint, documentation]
+  detail: >-
+    A consistent envelope across success and error. Errors add a stable UPPER_SNAKE_CASE `name`
+    code plus a `hint`, and often a `documentation` deep link. The same envelope is served by the
+    backend host: GET https://service.formboost.app/health returns
+    {"success":true,"message":"Server is healthy","data":{...}}.
+  divergence_note: >-
+    The llms.txt describes the envelope as `{ success, message, data? }` and the API reference
+    page shows `{ "success": true, "id": "sub_abc123", "message": "Submission received" }`.
+    The live 202 returned neither `data` nor `id` — it returned `requestId`. Three published
+    descriptions, three shapes. An agent should treat `success` and `message` as the only fields
+    it can rely on. Recorded as observed on 2026-09-02.
+  see: errors/formboost-problem-types.yml
+request_id_tracing:
+  supported: true
+  response_header: x-request-id
+  body_field: requestId
+  detail: >-
+    Every response carries an `x-request-id` UUID, and on the 202 the same value is echoed in the
+    body as `requestId`. Header and body agree — verified live. Quote it when contacting support.
+  verified: probed 2026-09-02
+pagination:
+  supported: na
+  detail: No collection endpoint is publicly exposed, so there is nothing to paginate.
+field_expansion:
+  supported: na
+sparse_fieldsets:
+  supported: na
+metadata:
+  supported: partial
+  detail: >-
+    Submissions are stored as JSON exactly as posted. Four reserved control fields are stripped
+    rather than stored, and are the only namespaced convention on the request side.
+  reserved_request_fields:
+    - field: _redirect
+      purpose: Absolute https URL to send an HTML form post to after a successful submission.
+      source: https://formboost.app/docs/api-reference-and-config
+    - field: _subject
+      purpose: Custom subject line on the notification email.
+      source: https://formboost.app/docs/api-reference-and-config
+    - field: _replyto
+      purpose: Sets the reply-to address on notification emails.
+      source: https://formboost.app/docs/api-reference-and-config
+    - field: _honey
+      purpose: >-
+        Honeypot field name. A filled value TAGS the submission as spam rather than rejecting it,
+        so the customer still sees it in the dashboard.
+      source: https://formboost.app/llms.txt
+  reserved_response_field:
+    - field: submittedAt
+      scope: webhook `submission` object
+      purpose: >-
+        The only reserved key in the webhook payload. A customer field of that name is dropped in
+        favour of the real timestamp.
+  divergence_note: >-
+    The llms.txt names only `_honey` and `_redirect` as reserved; the API reference names four.
+    The union is recorded above.
+versioning:
+  scheme: none
+  detail: Unversioned. See lifecycle/formboost-lifecycle.yml.
+error_envelope:
+  format: custom-json
+  rfc9457: false
+  see: errors/formboost-problem-types.yml
+rate_limit_signalling:
+  supported: true
+  headers: [RateLimit-Limit, RateLimit-Policy, RateLimit-Remaining, RateLimit-Reset]
+  standard: draft-ietf-httpapi-ratelimit-headers
+  retry_after: false
+  status: 429
+  detail: >-
+    The modern draft RateLimit-* family, emitted on anonymous responses. Observed policy on the
+    submission endpoint: 10;w=60.
+  see: rate-limits/formboost-rate-limits.yml
+  verified: probed 2026-09-02
+idempotency:
+  request_idempotency: false
+  detail: >-
+    NOT SUPPORTED on the write surface. POST /f/{alias} accepts no idempotency key, no
+    Idempotency-Key header, and no client-supplied deduplication token. Two identical POSTs
+    create two submissions. An agent retrying a submission after a timeout WILL double-submit,
+    and has no way to tell whether the first attempt landed — the endpoint returns 202 for a
+    non-existent alias too, so the response carries no confirmation an agent can key on.
+  event_delivery_dedup: true
+  event_delivery_detail: >-
+    In the OUTBOUND direction the provider does supply a dedupe key: the webhook `eventId`
+    (`sub_<submission id>`) is documented as stable across retries and explicitly recommended as
+    an idempotency key for the consumer. This helps a webhook receiver; it does nothing for a
+    client submitting a form.
+  no_pointer_note: >-
+    No `Idempotency` pointer is emitted in apis.yml. The outbound eventId is a consumer-side
+    dedupe hint, not request idempotency on the API, and claiming otherwise would credit
+    Formboost with a safety property its write path does not have.
+  see: asyncapi/formboost-webhooks.yml
+dry_run_mode:
+  supported: partial
+  detail: >-
+    No dry-run on the submission endpoint. There IS a "Send Test" action in the dashboard
+    Integrations tab that fires a `form.submission.test` event with a `test_<uuid>` id, letting a
+    customer rehearse the webhook delivery path without a real submission. That is a rehearsal of
+    delivery, not of the API call.
+  evidence: https://formboost.app/docs/http-webhook
+reversibility:
+  grade: documented
+  applicable: true
+  summary: >-
+    Formboost has exactly one public write: creating a submission. It can be undone — submissions
+    and forms are deletable — but ONLY from the dashboard, and the docs state no time window
+    because there is none: nothing expires automatically.
+  write_surfaces:
+    - surface: POST https://formboost.app/f/{alias}
+      operation_id: null
+      operation_note: >-
+        No operationId — Formboost publishes no OpenAPI. Identified by method+path.
+      creates: a submission
+      reversal:
+        available: true
+        mechanism: dashboard
+        api_operation: null
+        api_note: >-
+          There is NO public API operation to delete a submission. The FAQ claims a REST API for
+          retrieving submissions and updating endpoints, but no such API is documented anywhere
+          and the backend host answers 403 to anonymous requests. An agent that creates a
+          submission cannot programmatically remove it.
+        actions:
+          - delete an individual submission
+          - delete a form (deletes all of its submissions with it)
+          - delete the account (removes everything)
+        window:
+          stated: true
+          value: unbounded
+          detail: >-
+            "Submissions are kept until you delete them. There is no automatic expiry today."
+            Formboost states plainly that scheduled retention is not yet implemented, so a
+            submission remains deletable indefinitely. This is a stated absence of a deadline
+            rather than a stated deadline.
+          source: https://formboost.app/security
+        irreversible_beyond:
+          - action: deleting a form
+            detail: >-
+              "Deleting a form is permanent and cannot be undone. All submissions for that form
+              are deleted as well. The form endpoint will stop accepting submissions immediately."
+            source: https://formboost.app/faq
+            note: >-
+              The reversal is itself irreversible, and it cascades. An agent must treat form
+              deletion as terminal.
+  grade_rationale: >-
+    Graded `documented` rather than `verified`. A reversal path exists and is described, but it
+    is not reachable through the API — only a human in the dashboard can take it — and the
+    "window" is the absence of expiry rather than a bounded period an agent can plan against.
+  source: https://formboost.app/security, https://formboost.app/faq
+data_portability:
+  export: CSV export of any form's submissions from the dashboard
+  detail: >-
+    The security page also says submissions can be pulled "through the API", but no such API is
+    publicly documented. Recorded as a provider claim, unverified.
+  source: https://formboost.app/security
+agent_posture:
+  robots_txt: https://formboost.app/robots.txt
+  ai_crawlers_allowed:
+    - GPTBot
+    - OAI-SearchBot
+    - ChatGPT-User
+    - Claude-User
+    - PerplexityBot
+    - Perplexity-User
+    - Google-Extended
+    - Bingbot
+    - Applebot-Extended
+    - Meta-ExternalAgent
+  detail: >-
+    robots.txt explicitly allows every major AI crawler by name, disallows nothing, and carries a
+    comment block pointing agents at /llms.txt, /llms-full.txt and /docs as machine-readable entry
+    points. It also documents WHY nothing is disallowed (a disallowed URL is never fetched, so a
+    noindex on it is never seen). An unusually deliberate agent posture.
+  verified: probed 2026-09-02
+cross_references:
+  errors: errors/formboost-problem-types.yml
+  lifecycle: lifecycle/formboost-lifecycle.yml
+  authentication: authentication/formboost-authentication.yml
+  rate_limits: rate-limits/formboost-rate-limits.yml
+  webhooks: asyncapi/formboost-webhooks.yml

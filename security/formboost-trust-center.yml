@@ -1,0 +1,102 @@
+generated: '2026-09-02'
+method: searched
+source: https://formboost.app/security
+url: https://formboost.app/security
+trust_center_published: true
+trust_center_note: >-
+  Formboost has no separate trust.* subdomain or certification portal. It publishes a single
+  security-and-data-protection page that does the job of one: what is stored, who processes it,
+  how it is protected, retention, GDPR rights, and how to report a vulnerability.
+certifications: []
+certifications_note: >-
+  ZERO third-party certifications, stated by the provider in its own words:
+  "We hold no third-party certifications — no SOC 2 report, no ISO 27001, no independent
+  penetration test to share yet. Anyone claiming otherwise about us is wrong."
+  It goes further: "If your organisation requires a certified processor today, we are not the
+  right fit yet, and we would rather say so than lose your trust later."
+correction_note: >-
+  CORRECTED 2026-09-02. An earlier automated pass (probe-security-programs.py) keyword-matched
+  the strings "SOC 2" and "ISO 27001" on this page and recorded both as certifications HELD.
+  The page says the exact opposite — the keywords appear inside an explicit disclaimer. The
+  false entries were removed by hand. This is a negation false-positive in the probe script, not
+  a provider claim, and no Compliance pointer is emitted for SOC 2 or ISO 27001.
+compliance_programs:
+  - name: GDPR
+    status: self-declared
+    detail: >-
+      Genuinely documented rather than merely asserted. The page sets out the controller/processor
+      split (customer is controller of submissions, Formboost is processor), names the data
+      subjects, enumerates every subprocessor with what it can see, describes how to exercise
+      access/portability/erasure, and offers a data processing agreement on request.
+    dpa_available: true
+    dpa_route: email request
+    source: https://formboost.app/security
+data_handling:
+  sells_data: false
+  sells_data_statement: >-
+    "Submissions are not sold, rented, brokered, or used for advertising or profiling. Formboost
+    makes money from subscriptions, not from your data."
+  stored:
+    - category: Submission content
+      detail: Whatever fields the form posts, stored as JSON exactly as submitted.
+    - category: Submission metadata
+      detail: Timestamp, spam score, read state, and the form it belongs to.
+    - category: Account data
+      detail: Email address, and a bcrypt-hashed password or a Firebase identity.
+    - category: Integration config
+      detail: Destination URLs and any custom headers, used to deliver submissions.
+    - category: Billing records
+      detail: Subscription and payment references. Card details are handled by Razorpay only.
+  tracking_on_customer_forms: false
+  tracking_note: >-
+    "We do not run trackers or fingerprinting on the forms you host."
+subprocessors:
+  published: true
+  commitment: >-
+    "We do not add a subprocessor that touches submission content without updating this list."
+  list:
+    - name: Google (Gemini API)
+      purpose: Spam screening
+      sees: Submission content, on plans with AI screening active
+    - name: Google (Firebase)
+      purpose: Sign-in
+      sees: Account email and authentication identifiers
+    - name: Razorpay
+      purpose: Payments and subscriptions
+      sees: Billing identifiers and payment details entered with them
+    - name: Email delivery provider
+      purpose: Notification emails
+      sees: Recipient address and submission contents in the notification
+      note: Not named on the page.
+    - name: Tawk.to
+      purpose: Support chat on formboost.app
+      sees: Chat contents, only after optional cookies are accepted
+    - name: Google Analytics
+      purpose: Website analytics
+      sees: Usage data on formboost.app only — never submission data, and only after consent
+controls:
+  transport: TLS on every endpoint, terminated at the edge; Helmet security headers on API responses.
+  transport_verified: >-
+    TLSv1.3, HSTS max-age=15552000 includeSubDomains preload, restrictive CSP — probed 2026-09-02.
+  authentication: Signed JWTs for dashboard access; email verification required before the API accepts requests.
+  endpoint_hardening: Per-IP rate limiting, oversized-body rejection, spam screening before storage.
+  webhook_ssrf_control: >-
+    Destinations must be public HTTPS URLs; private and loopback addresses are rejected,
+    "which prevents Formboost being used to reach internal networks."
+retention:
+  automatic_expiry: false
+  detail: >-
+    "Submissions are kept until you delete them. There is no automatic expiry today, so data
+    minimisation is in your hands." Formboost explicitly declines to imply a retention schedule
+    it does not enforce; scheduled retention is on the roadmap.
+  customer_controls:
+    - Export any form's submissions as CSV
+    - Delete individual submissions
+    - Delete a form (deletes its submissions)
+    - Delete the account (removes everything)
+  source: https://formboost.app/security
+assessment: >-
+  A young product with no audited assurance, but with unusually honest disclosure. There is no
+  certification to point a procurement team at; there IS a complete, specific and self-critical
+  account of what happens to the data. Buyers requiring a certified processor should read the
+  provider's own advice and look elsewhere for now.

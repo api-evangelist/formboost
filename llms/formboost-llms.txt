@@ -1,0 +1,178 @@
+# Formboost
+
+> Formboost is the form backend for every frontend — React, Next.js, Vue, Astro, Angular, static-site generators or plain HTML. Point your form at a Formboost endpoint and every submission lands in your inbox and a searchable dashboard — no backend code, no server, no database to run. Free forever on the Free plan: 500 submissions a month across 10 forms, no card required, submissions never deleted, with email, Slack, Discord and Telegram delivery and honeypot spam filtering all included at no cost. AI-powered spam screening and custom webhooks are on the paid plans. Paid plans start at $9/mo (Starter), below Formspree ($10/mo) and Basin ($12.50/mo).
+
+Formboost works with any HTML form and any frontend stack — plain HTML, React, Next.js, Vue,
+Nuxt, and JavaScript are documented directly, and any static-site or CMS platform (WordPress,
+Webflow, Shopify, Squarespace, Framer, GitBook, Astro, Gatsby, Angular, Eleventy, Jekyll) can
+post to a Formboost endpoint the same way. Every submission is screened for spam by heuristics
+on all plans, with Gemini AI judging ambiguous submissions from the Starter plan up, and Gemini
+on every submission from Pro up. Submissions can fan out to Google Sheets, email, Slack, Discord,
+Telegram, Zapier, n8n, or any other webhook-based automation platform (Make, IFTTT, etc.
+reachable via webhook). Google Sheets, Zapier and n8n are first-class destinations on the
+Starter plan and above. Google Sheets is the one native OAuth connection: you sign in with
+Google and Formboost creates the spreadsheet, appending a row per submission and adding a
+column whenever a new form field appears; it requests only the drive.file scope, so it can
+reach the spreadsheets it created and nothing else in your Drive. Zapier and n8n are
+configured with a Webhooks by Zapier catch-hook URL and an n8n Webhook node URL respectively;
+n8n works with self-hosted instances as well as n8n.cloud, and Formboost publishes no app in
+either catalogue. File uploads and form analytics are on the roadmap and not yet
+available. Pricing: Free ($0/mo, 10 forms, 500 submissions/month), Starter ($9/mo, unlimited
+forms, 5,000 submissions/month), Pro ($24/mo, unlimited forms, 50,000 submissions/month),
+Business (custom pricing, unlimited forms and submissions, contact sales).
+
+## For Developers
+
+- [Documentation](https://formboost.app/docs): Setup guides, the form endpoint reference, integrations and framework-specific instructions.
+- [API Reference & Configuration](https://formboost.app/docs/api-reference-and-config): The form submission endpoint in full — request shape, reserved fields, responses and configuration.
+- Form submission endpoint: `POST https://formboost.app/f/{alias}` — no authentication, accepts `application/json` or `application/x-www-form-urlencoded`, answers `202` to JSON clients and `302` to HTML form posts. This is the only endpoint Formboost exposes publicly; forms, submissions and integrations are managed in the dashboard, not through a public API.
+- Reserved form fields: `_honey` (honeypot — a filled value tags the submission as spam rather than rejecting it) and `_redirect` (absolute `https` URL to send an HTML form post to after submitting).
+- Response envelope: `{ success, message, data? }`; errors add a stable `UPPER_SNAKE_CASE` `name` code plus a `hint` on 4xx responses.
+- Markdown content negotiation: send `Accept: text/markdown` to any page on this site for the content as Markdown. Responses carry `Vary: Accept`; an unsatisfiable `Accept` gets `406`.
+- There is no Formboost CLI, SDK or MCP server. Integration is the HTML form `action` or a single `POST`, and nothing else is needed.
+
+## Getting Started
+
+- [Getting Started](https://formboost.app/docs/getting-started): Learn how to integrate Formboost into your project in under 5 minutes.
+- [API Reference & Configuration](https://formboost.app/docs/api-reference-and-config): Submit forms programmatically via POST and configure email notifications, spam protection, and allowed origins.
+- [Integrations Guide](https://formboost.app/docs/integrations): Connect your Formboost forms to external services to trigger workflows after every submission.
+- [Google Sheets Integration Docs](https://formboost.app/docs/google-sheets): Write every Formboost submission to a Google Sheet that Formboost creates and keeps in step with your form's fields.
+- [HTTP Webhook](https://formboost.app/docs/http-webhook): Send form submission data to any custom HTTP endpoint to trigger your own backend workflows.
+- [Zapier Integration Docs](https://formboost.app/docs/zapier): Send every Formboost submission into a Zap and on to Google Sheets, a CRM, or any of the thousands of apps Zapier connects to.
+- [n8n Integration Docs](https://formboost.app/docs/n8n): Trigger an n8n workflow on every Formboost submission — works with n8n.cloud and with self-hosted instances.
+
+## Framework & Platform Guides
+
+- [React Forms with Next.js](https://formboost.app/docs/nextjs): Submit Next.js contact forms to Formboost using React state, fetch, or Server Actions — no API route required.
+- [Forms in Angular](https://formboost.app/docs/angular): Submit Angular reactive forms to Formboost using HttpClient — no backend required.
+- [Adding a Form to Astro](https://formboost.app/docs/astro): Collect form submissions from your Astro site using Formboost — works with static output, SSR, and any UI framework.
+- [React Forms with Gatsby](https://formboost.app/docs/gatsby): Submit Gatsby contact forms to Formboost using React state and fetch — no backend, no serverless functions required.
+- [HTML Forms with Eleventy](https://formboost.app/docs/eleventy): Add Formboost-powered forms to your Eleventy static site — no serverless functions or backend required.
+- [HTML Forms with Jekyll](https://formboost.app/docs/jekyll): Add a Formboost-powered contact form to your Jekyll site — no plugins, no backend, no serverless functions.
+- [Adding a Form to WordPress](https://formboost.app/docs/wordpress): Add a Formboost-powered contact form to any WordPress site using a Custom HTML block or theme template — no plugin required.
+- [Adding a Form to Webflow](https://formboost.app/docs/webflow): Collect form submissions from your Webflow site using Formboost and a custom HTML embed — with AI spam filtering, webhooks, and a submission dashboard.
+- [Adding a Form to Shopify](https://formboost.app/docs/shopify): Add a custom contact or lead capture form to your Shopify store using Formboost and a Liquid template — no app required.
+- [Adding a Form to Squarespace](https://formboost.app/docs/squarespace): Use Formboost to collect form submissions from a Squarespace site using a custom HTML code block.
+- [Adding a Form to Framer](https://formboost.app/docs/framer): Collect form submissions from your Framer site using Formboost — no backend required.
+- [Adding a Form to GitBook](https://formboost.app/docs/gitbook): Embed a Formboost-powered contact or feedback form in your GitBook documentation using a custom HTML block.
+- [For Every Framework](https://formboost.app/for): Framework-specific setup pages for HTML, JavaScript, React, Next.js, Vue, and Nuxt.
+
+## Integrations
+
+- [All Integrations](https://formboost.app/integrations): Connect Formboost to external services to trigger workflows after every submission.
+- [Google Sheets](https://formboost.app/integrations/google-sheets): Write every submission to a Google Sheet Formboost creates for you.
+- [Webhooks](https://formboost.app/integrations/webhooks): Real-time form submissions to your backend.
+- [Slack](https://formboost.app/integrations/slack): Get form submissions in your Slack channel.
+- [Discord](https://formboost.app/integrations/discord): Form submissions to your Discord server.
+- [Telegram](https://formboost.app/integrations/telegram): Form submissions delivered to a Telegram chat.
+- [Email Notifications](https://formboost.app/integrations/email): Automatic email notifications for submissions.
+- [Zapier](https://formboost.app/integrations/zapier): Start a Zap on every submission and reach Zapier's app catalogue.
+- [n8n](https://formboost.app/integrations/n8n): Trigger an n8n workflow on every submission, self-hosted or cloud.
+- [Slack Integration Docs](https://formboost.app/docs/slack): Post a notification to a Slack channel every time your Formboost form receives a submission.
+- [Discord Integration Docs](https://formboost.app/docs/discord): Post a message to a Discord channel every time your Formboost form receives a submission.
+- [Telegram Integration Docs](https://formboost.app/docs/telegram): Send a Telegram message to a user, group, or channel every time your Formboost form receives a submission.
+
+## Features
+
+- [All Features](https://formboost.app/features): Overview of every Formboost capability, from the form backend and spam protection through webhooks, integrations, and the submission dashboard.
+- [Form Backend](https://formboost.app/features/form-backend): Complete form handling without server code.
+- [Form Endpoints](https://formboost.app/features/form-endpoint): A unique URL that accepts your form's POST requests.
+- [Webhooks](https://formboost.app/features/webhooks): Real-time form submission notifications.
+- [Email Notifications](https://formboost.app/features/email-notifications): Automatic email alerts for form submissions.
+- [Spam Protection](https://formboost.app/features/spam-protection): AI-powered spam filtering for forms.
+- [Form Submissions](https://formboost.app/features/form-submissions): View, search, and export every submission in one dashboard.
+- [Custom Redirects](https://formboost.app/features/custom-redirects): Send users to your own thank-you page after submitting.
+- [API](https://formboost.app/features/api): Programmatic access to forms, submissions, and configuration.
+
+## Use Cases
+
+- [All Use Cases](https://formboost.app/use-cases): Contact forms, lead generation, surveys, events, and more.
+- [Contact Forms](https://formboost.app/use-cases/contact-forms): Collect customer inquiries and feedback.
+- [Lead Generation](https://formboost.app/use-cases/lead-generation): Capture leads and qualify prospects.
+- [Newsletter Signups](https://formboost.app/use-cases/newsletter-signups): Build your email subscriber list.
+- [Feedback Forms](https://formboost.app/use-cases/feedback-forms): Collect customer feedback and product suggestions.
+- [Survey Forms](https://formboost.app/use-cases/survey-forms): Run structured surveys and collect responses at scale.
+- [Portfolio Contact Forms](https://formboost.app/use-cases/portfolio-forms): Add a contact form to your portfolio or personal site.
+- [Event Registration](https://formboost.app/use-cases/event-registration): Register attendees for events and webinars.
+- [Job Application Forms](https://formboost.app/use-cases/job-application-forms): Accept job applications from candidates.
+
+## Compare & Alternatives
+
+- [All Comparisons](https://formboost.app/compare): Formboost compared side-by-side against other form backends.
+- [Formboost vs Formspree](https://formboost.app/compare/formboost-vs-formspree)
+- [Formboost vs Getform](https://formboost.app/compare/formboost-vs-getform)
+- [Formboost vs Formspark](https://formboost.app/compare/formboost-vs-formspark)
+- [Formboost vs Basin](https://formboost.app/compare/formboost-vs-basin)
+- [Formboost vs Web3Forms](https://formboost.app/compare/formboost-vs-web3forms)
+- [All Alternatives](https://formboost.app/alternatives): Formboost as an alternative to other form backend services.
+- [Formspree Alternative](https://formboost.app/alternatives/formspree)
+- [Getform Alternative](https://formboost.app/alternatives/getform)
+- [Formspark Alternative](https://formboost.app/alternatives/formspark)
+- [Basin Alternative](https://formboost.app/alternatives/basin)
+- [Web3Forms Alternative](https://formboost.app/alternatives/web3forms)
+- [Migrate from Formspree](https://formboost.app/migrate/from-formspree)
+- [Migrate from Getform](https://formboost.app/migrate/from-getform)
+- [Migrate from Formspark](https://formboost.app/migrate/from-formspark)
+- [Migrate from Basin](https://formboost.app/migrate/from-basin)
+- [Migrate from Web3Forms](https://formboost.app/migrate/from-web3forms)
+
+## Blog
+
+- [Get Started with Formboost in 5 Minutes](https://formboost.app/blog/formboost-getting-started): Create your first form endpoint, add it to your HTML, and start receiving submissions with email notifications and AI spam filtering — no backend required.
+- [How to Use Webhooks with Your Contact Form](https://formboost.app/blog/form-webhook-guide): Webhooks let you forward form submissions to any URL the moment they arrive — trigger CRM updates, Zapier workflows, database writes, or custom backend logic automatically.
+- [Formboost API Guide](https://formboost.app/blog/formboost-api-guide): Submit forms programmatically and configure notifications, spam protection, and allowed origins via the Formboost API.
+- [How to Handle Forms Without a Backend](https://formboost.app/blog/handle-forms-without-backend): Accept form submissions from a static site with no server, no database, and no backend code.
+- [HTML Contact Form Example](https://formboost.app/blog/html-contact-form-example): A working plain-HTML contact form wired to a Formboost endpoint.
+- [React Contact Form Example](https://formboost.app/blog/react-contact-form-example): Build a contact form in React and submit it to Formboost with fetch.
+- [Next.js Contact Form](https://formboost.app/blog/nextjs-contact-form): Add a contact form to a Next.js app and submit it to Formboost.
+- [Tailwind Contact Form](https://formboost.app/blog/tailwind-contact-form): A styled contact form built with Tailwind CSS, wired to Formboost.
+- [Angular Contact Form](https://formboost.app/blog/angular-contact-form): Submit an Angular reactive form to Formboost using HttpClient.
+- [Astro Contact Form](https://formboost.app/blog/astro-contact-form): Add a contact form to an Astro site and submit it to Formboost.
+- [Gatsby Contact Form](https://formboost.app/blog/gatsby-contact-form): Submit a Gatsby contact form to Formboost with React state and fetch.
+- [Eleventy Contact Form](https://formboost.app/blog/eleventy-contact-form): Add a Formboost-powered contact form to an Eleventy static site.
+- [Jekyll Contact Form](https://formboost.app/blog/jekyll-contact-form): Add a Formboost-powered contact form to a Jekyll site.
+- [WordPress Contact Form (No Plugin)](https://formboost.app/blog/wordpress-contact-form-no-plugin): Add a contact form to WordPress using a Custom HTML block, no plugin required.
+- [Slack Form Notifications](https://formboost.app/blog/slack-form-notifications): Post a Slack message every time your Formboost form receives a submission.
+- [Discord Form Notifications](https://formboost.app/blog/discord-form-notifications): Post a Discord message every time your Formboost form receives a submission.
+- [Telegram Form Notifications](https://formboost.app/blog/telegram-form-notifications): Send a Telegram message every time your Formboost form receives a submission.
+- [Form Integrations Overview](https://formboost.app/blog/form-integrations-overview): A tour of every way to route a Formboost submission — email, Slack, Discord, Telegram, and webhooks.
+- [Formspree Alternative](https://formboost.app/blog/formspree-alternative): Why teams switch from Formspree to Formboost.
+- [Formspark Alternative](https://formboost.app/blog/formspark-alternative): Why teams switch from Formspark to Formboost.
+- [Getform Alternative](https://formboost.app/blog/getform-alternative): Why teams switch from Getform to Formboost.
+- [Basin Alternative](https://formboost.app/blog/basin-alternative): Why teams switch from Basin to Formboost.
+- [Typeform Alternative](https://formboost.app/blog/typeform-alternative): Using Formboost as a lighter-weight Typeform alternative for simple forms.
+- [Jotform Alternative](https://formboost.app/blog/jotform-alternative): Using Formboost as a developer-first Jotform alternative.
+- [Netlify Forms Alternative](https://formboost.app/blog/netlify-forms-alternative): Using Formboost when you need a form backend that isn't tied to Netlify hosting.
+- [Web3Forms Alternative](https://formboost.app/blog/web3forms-alternative): Comparing Formboost and Web3Forms for backend-free form handling.
+- [Introducing Formboost](https://formboost.app/blog/introducing-formboost): The story behind Formboost and what launched on day one.
+
+## Pricing & Company
+
+- [Pricing](https://formboost.app/pricing): Free, Starter, Pro, and Business plans with full feature and limit comparison.
+- [Changelog](https://formboost.app/changelog): Every Formboost release with its features and fixes.
+- [FAQ](https://formboost.app/faq): Answers to common questions about setup, pricing, and support.
+- [About](https://formboost.app/about): Who builds Formboost and why.
+- [Ritu Fadadu](https://formboost.app/authors/ritu-fadadu): Author of the Formboost documentation and blog, with every article and guide listed.
+
+## Links
+
+- [Website](https://formboost.app): marketing site and product overview
+- [Dashboard](https://dashboard.formboost.app): sign up, manage forms, view submissions
+- [Support](https://formboost.app/support): help center
+- [Status](https://status.formboost.app): uptime and incident history
+
+## Optional
+
+- [Contact Sales](https://formboost.app/contact): for the Business plan and custom volume
+- [Security](https://formboost.app/security): how Formboost handles data and security
+- [Privacy Policy](https://formboost.app/privacy)
+- [Terms of Service](https://formboost.app/terms)
+- [Twitter/X](https://x.com/formboost)
+- [LinkedIn](https://linkedin.com/company/formboost)
+- [GitHub](https://github.com/formboost)
+
+## Full Content
+
+- [Everything (docs + blog)](https://formboost.app/llms-full.txt)
+- [Complete documentation](https://formboost.app/docs/llms-full.txt)
+- [Complete blog posts](https://formboost.app/blog/llms-full.txt)

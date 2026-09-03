@@ -1,0 +1,75 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  https://formboost.app/changelog, https://formboost.app/faq,
+  https://formboost.app/docs/http-webhook, https://status.formboost.app
+versioning:
+  scheme: none
+  detail: >-
+    Formboost publishes no API version. There is no version path segment (the endpoint is
+    /f/{alias}), no version header, and no dated version scheme. The API is unversioned and
+    changes are announced in the changelog.
+  evidence: https://formboost.app/docs/api-reference-and-config
+  current_version: null
+deprecation:
+  policy_published: false
+  detail: >-
+    No deprecation policy exists. No Deprecation or Sunset header (RFC 8594) was observed on any
+    response, and no page states a support window for a superseded shape.
+  rfc8594_headers: false
+  evidence: live header probe of https://formboost.app/f/{alias}, 2026-09-02
+  breaking_changes_observed:
+    - date: '2026-08'
+      change: >-
+        Webhook payload restructured — customer fields moved from the top level under a
+        `submission` object; `fb_formId`, `fb_formName` and `fb_dashboardUrl` removed.
+      migration_documented: true
+      notice_period: none published
+      source: https://formboost.app/docs/http-webhook
+      note: >-
+        Handled well in one respect and poorly in another: the docs carry a clear before/after
+        migration note AND a troubleshooting row for the exact symptom ("Fields suddenly
+        undefined"), but consumers got no versioned opt-in and no deprecation window — the old
+        shape simply stopped being sent.
+status_page:
+  url: https://status.formboost.app
+  status: 200
+  verified: '2026-09-02'
+  detail: Uptime and incident history, linked from the changelog and the llms.txt.
+sla:
+  published: false
+  detail: >-
+    No numeric SLA. The FAQ answers "What is Formboost's uptime SLA?" with "Formboost is built on
+    a reliable, redundant infrastructure. Check our status page" — an infrastructure claim, not a
+    commitment. No uptime percentage, no credits, no response-time target.
+  evidence: https://formboost.app/faq
+support:
+  channel: email
+  contact: support@formboost.app
+  response_target: within 24 hours on business days
+  priority_support: Premium plans
+  evidence: https://formboost.app/support
+maturity:
+  self_assessment: >-
+    Formboost describes itself as "a young product" on its security page and voluntarily
+    enumerates what it does not yet have — no third-party certifications, no automatic retention
+    schedule, no retries on webhook delivery. That candour is unusual and is recorded here as a
+    lifecycle signal in its own right.
+  evidence: https://formboost.app/security
+roadmap:
+  published: false
+  detail: >-
+    No roadmap page. Individual "on the roadmap" items are stated across the docs and FAQ:
+    file uploads, form analytics, auto-replies, and scheduled data retention. There is no dated
+    roadmap surface, so no Roadmap pointer is emitted.
+  items:
+    - file uploads (multipart is rejected today)
+    - form analytics
+    - auto-replies to form submitters
+    - scheduled retention / automatic expiry of submissions
+  evidence: https://formboost.app/faq, https://formboost.app/security
+changelog:
+  url: https://formboost.app/changelog
+  status: 200
+  verified: '2026-09-02'
+  detail: Dated entries tagged New / Improved / Fixed. See changelog/formboost-changelog.yml.

@@ -1,0 +1,49 @@
+generated: '2026-09-02'
+method: searched
+source: https://formboost.app/changelog
+url: https://formboost.app/changelog
+scheme: dated-entries
+version_scheme: none
+current_version: null
+note: >-
+  Entries are dated and tagged (New / Improved / Fixed) but carry no version numbers, and the
+  changelog does not mark breaking changes. Notably the August 2026 webhook payload restructure —
+  a genuine breaking change documented in the webhook docs — has no corresponding changelog entry.
+  Recorded as observed.
+entries:
+  - date: '2026-08-15'
+    tag: New
+    title: Plan entitlements and feature gating
+    summary: >-
+      Unified entitlements system so plan limits and feature access are consistent across the
+      dashboard and API.
+    breaking: false
+  - date: '2026-07-20'
+    tag: New
+    title: Telegram integration
+    summary: >-
+      Send form submissions directly to a Telegram chat or channel via a bot, alongside Slack
+      and Discord.
+    breaking: false
+    additions:
+      - Telegram destination
+  - date: '2026-06-10'
+    tag: Improved
+    title: Improved spam scoring
+    summary: >-
+      Spam detection now scores submissions instead of a binary block/allow, so a customer can
+      set their own filtering threshold.
+    breaking: false
+  - date: '2026-03-18'
+    tag: Fixed
+    title: Custom redirect fix
+    summary: >-
+      Fixed custom redirect URLs with query parameters not being preserved after submission.
+    breaking: false
+unlisted_breaking_changes:
+  - date: '2026-08'
+    title: Webhook payload restructured under `submission`
+    source: https://formboost.app/docs/http-webhook
+    note: >-
+      Documented in the webhook reference but absent from the changelog. Flagged because a
+      consumer watching only the changelog would have missed it.

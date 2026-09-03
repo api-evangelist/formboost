@@ -1,0 +1,64 @@
+generated: '2026-09-02'
+method: searched
+source: >-
+  registry.npmjs.org search, pypi.org, rubygems.org, crates.io, packagist.org,
+  api.github.com/orgs/formboost/repos, and https://formboost.app/llms.txt
+package_count: 0
+packages: []
+note: >-
+  Formboost publishes no client libraries in any package registry, and says so itself: the
+  llms.txt states "There is no Formboost CLI, SDK or MCP server. Integration is the HTML form
+  `action` or a single `POST`, and nothing else is needed." That is a design position, not
+  abandonment — the entire public surface is one unauthenticated POST that every language can
+  make with its standard HTTP client, so there is nothing for an SDK to wrap.
+  No SDKs pointer is emitted, because no SDK exists.
+registries_checked:
+  - registry: npm
+    query: https://registry.npmjs.org/-/v1/search?text=formboost
+    result: 0 packages
+    version: null
+  - registry: pypi
+    query: https://pypi.org/pypi/formboost/json
+    result: 404
+    version: null
+  - registry: rubygems
+    query: https://rubygems.org/api/v1/gems/formboost.json
+    result: 404
+    version: null
+  - registry: crates.io
+    query: https://crates.io/api/v1/crates/formboost
+    result: 403 (crates.io blocks unauthenticated agents; no crate named formboost is referenced by the provider)
+    version: null
+  - registry: packagist
+    query: https://packagist.org/packages/formboost/formboost.json
+    result: 404
+    version: null
+github_org:
+  url: https://github.com/formboost
+  repo_count: 8
+  note: >-
+    The org holds documentation and copy-paste example repositories only — formboost-examples,
+    formboost-docs, formboost-html-examples, formboost-react-examples, formboost-nextjs-examples,
+    formboost-starter-templates, awesome-formboost. None is an installable client library.
+  repos:
+    - name: formboost-docs
+      description: Official documentation and integration guides.
+      installable: false
+    - name: formboost-examples
+      description: Official examples and starter projects for popular frameworks.
+      installable: false
+    - name: formboost-html-examples
+      description: Plain HTML contact, newsletter, feedback, survey examples.
+      installable: false
+    - name: formboost-react-examples
+      description: React + Vite examples with fetch/axios patterns.
+      installable: false
+    - name: formboost-nextjs-examples
+      description: App Router + client/server examples.
+      installable: false
+    - name: formboost-starter-templates
+      description: Ready-to-clone contact/newsletter/feedback templates.
+      installable: false
+    - name: awesome-formboost
+      description: Community examples, integrations, tutorials, templates.
+      installable: false

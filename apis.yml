@@ -4,6 +4,7 @@ description: >-
   Submissions land in an inbox and searchable dashboard and can fan out to Google Sheets, email, Slack, Discord,
   Telegram, Zapier, n8n, and webhooks. No backend code, server, or database required.
 url: https://raw.githubusercontent.com/api-evangelist/formboost/refs/heads/main/apis.yml
+image: https://formboost.app/og.png
 created: '2026-09-02'
 modified: '2026-09-02'
 specificationVersion: '0.21'
@@ -44,15 +45,94 @@ apis:
     properties:
       - type: Documentation
         url: https://formboost.app/docs
-      - type: Documentation
+      - type: APIReference
         url: https://formboost.app/docs/api-reference-and-config
+      - type: GettingStarted
+        url: https://formboost.app/docs/getting-started
       - type: LLMsTxt
         url: https://formboost.app/llms.txt
       - type: LLMsTxt
-        url: https://formboost.app/llms-full.txt
+        url: llms/formboost-llms.txt
+      - type: Authentication
+        url: authentication/formboost-authentication.yml
+      - type: ErrorCatalog
+        url: errors/formboost-problem-types.yml
+      - type: RateLimits
+        url: rate-limits/formboost-rate-limits.yml
+      - type: Conventions
+        url: conventions/formboost-conventions.yml
+      - type: Webhooks
+        url: asyncapi/formboost-webhooks.yml
 maintainers:
   - FN: Formboost
     url: https://formboost.app
+    email: support@formboost.app
+common:
+  - type: Documentation
+    url: https://formboost.app/docs
+  - type: DeveloperPortal
+    url: https://dashboard.formboost.app
+  - type: APIReference
+    url: https://formboost.app/docs/api-reference-and-config
+  - type: GettingStarted
+    url: https://formboost.app/docs/getting-started
+  - type: Support
+    url: https://formboost.app/support
+  - type: HelpCenter
+    url: https://formboost.app/faq
+  - type: Blog
+    url: https://formboost.app/blog
+  - type: GitHubOrganization
+    url: https://github.com/formboost
+  - type: Pricing
+    url: https://formboost.app/pricing
+  - type: SignUp
+    url: https://dashboard.formboost.app/signup
+  - type: TermsOfService
+    url: https://formboost.app/terms
+  - type: PrivacyPolicy
+    url: https://formboost.app/privacy
+  - type: Security
+    url: https://formboost.app/security
+  - type: StatusPage
+    url: https://status.formboost.app
+  - type: ChangeLog
+    url: https://formboost.app/changelog
+  - type: LLMsTxt
+    url: llms/formboost-llms.txt
+  - type: ChangeLog
+    url: changelog/formboost-changelog.yml
+  - type: Lifecycle
+    url: lifecycle/formboost-lifecycle.yml
+  - type: Plans
+    url: plans/formboost-plans-pricing.yml
+  - type: RateLimits
+    url: rate-limits/formboost-rate-limits.yml
+  - type: Authentication
+    url: authentication/formboost-authentication.yml
+  - type: Conventions
+    url: conventions/formboost-conventions.yml
+  - type: ErrorCatalog
+    url: errors/formboost-problem-types.yml
+  - type: Webhooks
+    url: asyncapi/formboost-webhooks.yml
+  - type: Conformance
+    url: conformance/formboost-conformance.yml
+  - type: Compliance
+    url: conformance/formboost-conformance.yml
+  - type: TrustCenter
+    url: security/formboost-trust-center.yml
+  - type: VulnerabilityDisclosure
+    url: security/formboost-vulnerability-disclosure.yml
+  - type: DomainSecurity
+    url: security/formboost-domain-security.yml
+  - type: Packages
+    url: packages/formboost-packages.yml
+x-enrichment:
+  date: '2026-09-02'
+  status: enriched
+  artifacts_added: 16
+  pass: local-v1
 generated:
   by: apis.io/add
   model: claude-opus-4-8

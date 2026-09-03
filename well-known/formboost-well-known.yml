@@ -1,0 +1,68 @@
+generated: '2026-09-02'
+method: probed
+source: live GET probes of the named /.well-known/ path list on every Formboost host
+note: >-
+  Every named path 404s on the canonical host formboost.app. The dashboard and status hosts are
+  single-page-app catch-alls that answer 200 with an HTML shell for EVERY /.well-known/* path —
+  those are recorded as misses, not hits, because no document was served. No WellKnown or
+  SecurityTxt pointer is emitted: this file documents an absence, not a presence.
+  Formboost does publish machine-readable entry points, but at /llms.txt and /sitemap.xml
+  rather than under /.well-known/ (see llms/formboost-llms.txt).
+hosts:
+  - host: formboost.app
+    documents:
+      - path: /.well-known/security.txt
+        status: 404
+        file: null
+      - path: /.well-known/openid-configuration
+        status: 404
+        file: null
+      - path: /.well-known/oauth-authorization-server
+        status: 404
+        file: null
+      - path: /.well-known/api-catalog
+        status: 404
+        file: null
+      - path: /.well-known/ai-plugin.json
+        status: 404
+        file: null
+      - path: /.well-known/agent-card.json
+        status: 404
+        file: null
+      - path: /.well-known/agent.json
+        status: 404
+        file: null
+  - host: dashboard.formboost.app
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: null
+        note: SPA catch-all returned text/html, not a document — treated as a miss.
+      - path: /.well-known/agent-card.json
+        status: 200
+        file: null
+        note: SPA catch-all returned text/html, not a document — treated as a miss.
+      - path: /.well-known/oauth-authorization-server
+        status: 200
+        file: null
+        note: SPA catch-all returned text/html, not a document — treated as a miss.
+  - host: status.formboost.app
+    documents:
+      - path: /.well-known/security.txt
+        status: 200
+        file: null
+        note: SPA catch-all returned text/html, not a document — treated as a miss.
+      - path: /.well-known/agent-card.json
+        status: 200
+        file: null
+        note: SPA catch-all returned text/html, not a document — treated as a miss.
+  - host: service.formboost.app
+    documents:
+      - path: /.well-known/security.txt
+        status: 403
+        file: null
+        note: Cloudflare WAF blocks anonymous requests to this API host.
+      - path: /.well-known/agent-card.json
+        status: 403
+        file: null
+        note: Cloudflare WAF blocks anonymous requests to this API host.

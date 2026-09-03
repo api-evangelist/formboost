@@ -1,0 +1,142 @@
+generated: '2026-09-02'
+method: searched
+source: https://formboost.app/docs/http-webhook
+asyncapi_published: false
+asyncapi_note: >-
+  Formboost publishes no AsyncAPI document. It does publish a fully specified webhook envelope,
+  captured below verbatim from the docs. Nothing here is generated — no AsyncAPI file is written,
+  because fabricating one would assert a machine-readable event contract the provider does not ship.
+transport: http
+direction: outbound (Formboost -> customer endpoint)
+configuration:
+  location: dashboard -> form -> Integrations tab -> Webhook
+  methods: [POST, GET, PUT, PATCH]
+  custom_headers: >-
+    Arbitrary headers supplied as a JSON object, used for authenticating the delivery to the
+    customer's own endpoint (e.g. Authorization, X-API-Key).
+  destination_constraints: >-
+    Destinations must be public HTTPS URLs. Private and loopback addresses (localhost,
+    127.0.0.1) are rejected — an explicit SSRF control, stated at https://formboost.app/security.
+  content_type: application/json (for POST, PUT, PATCH); query parameters for GET
+events:
+  - name: form.submission
+    description: A form received a submission and it passed spam screening and was stored.
+    payload_fields:
+      - field: event
+        type: string
+        description: 'Literal `form.submission`.'
+      - field: eventId
+        type: string
+        description: >-
+          `sub_<submission id>`. STABLE ACROSS RETRIES — the docs name it explicitly as an
+          idempotency key for dropping duplicates on the consumer side.
+      - field: sentAt
+        type: string (ISO 8601)
+        description: When this delivery attempt left Formboost. Changes on every attempt.
+      - field: form.name
+        type: string
+        description: The form's display name.
+      - field: form.alias
+        type: string
+        description: The form's endpoint alias.
+      - field: submission.submittedAt
+        type: string (ISO 8601)
+        description: >-
+          When the form was actually filled in. Unchanged by retries, so it can be much earlier
+          than sentAt.
+      - field: submission.*
+        type: object
+        description: >-
+          The customer's own form fields, exactly as submitted — not renamed or reordered.
+    example: |
+      {
+        "event": "form.submission",
+        "eventId": "sub_3b241101-e2bb-4255-8caf-4136c566a962",
+        "sentAt": "2026-08-24T12:00:00.120Z",
+        "form": { "name": "Contact Form", "alias": "contact" },
+        "submission": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "message": "Hello, I'd like to learn more.",
+          "submittedAt": "2026-08-24T12:00:00.000Z"
+        }
+      }
+  - name: form.submission.test
+    description: >-
+      A test delivery fired from the Integrations tab's "Send Test" button. Same envelope,
+      but eventId is `test_<uuid>` instead of `sub_<submission id>`.
+    payload_fields:
+      - field: event
+        type: string
+        description: 'Literal `form.submission.test`.'
+      - field: eventId
+        type: string
+        description: '`test_<uuid>`.'
+reserved_keys:
+  - key: submittedAt
+    scope: inside `submission`
+    behaviour: >-
+      A form field named `submittedAt` is dropped in favour of the real timestamp, because
+      consumers rely on it being a date. It is the ONLY reserved key — everything Formboost adds
+      lives under `event`, `eventId`, `sentAt` and `form`, so a customer field called `name`,
+      `id` or `event` cannot collide.
+delivery_semantics:
+  guarantee: at-most-once
+  retries: false
+  retry_detail: >-
+    Formboost delivers each submission exactly ONCE. A non-2xx status or a timeout is NOT
+    retried; the failure is recorded with its status code under Integrations -> Delivery Logs.
+    This is the single most important operational fact about the surface: a consumer that needs
+    at-least-once must queue the payload the moment it arrives.
+  consumer_timeout: 10 seconds
+  timeout_detail: The consuming endpoint must respond within 10 seconds.
+  delivery_logs: dashboard -> Integrations -> Delivery Logs
+  ordering: not specified
+  signing: false
+  signing_note: >-
+    Formboost does NOT sign webhook deliveries. There is no HMAC signature header and no shared
+    secret. The documented authentication story is the reverse direction — the consumer adds its
+    own custom headers so Formboost can authenticate TO the consumer. A consumer cannot
+    cryptographically verify that a delivery originated from Formboost; treat the payload as
+    unauthenticated input and rely on a hard-to-guess destination URL plus its own header check.
+shared_envelope:
+  destinations: [http-webhook, zapier, n8n]
+  note: >-
+    The docs state the Zapier and n8n destinations send the SAME envelope as the raw HTTP
+    webhook — "a consumer written against one works against all three." Zapier is wired via a
+    Webhooks by Zapier catch-hook URL and n8n via a Webhook node URL; Formboost publishes no app
+    in either catalogue.
+other_destinations:
+  - name: Email notifications
+    docs: https://formboost.app/integrations/email
+  - name: Slack
+    docs: https://formboost.app/docs/slack
+  - name: Discord
+    docs: https://formboost.app/docs/discord
+  - name: Telegram
+    docs: https://formboost.app/docs/telegram
+  - name: Google Sheets
+    docs: https://formboost.app/docs/google-sheets
+    note: >-
+      The one native OAuth connection. Formboost requests only the Google `drive.file` scope, so
+      it can reach the spreadsheets it created and nothing else in the user's Drive.
+breaking_changes:
+  - date: '2026-08'
+    summary: >-
+      The webhook body was flattened-to-nested. Customer fields used to sit at the top level
+      alongside `fb_formId`, `fb_formName` and `fb_dashboardUrl`; those keys are gone and fields
+      now live under `submission`. A consumer reading `req.body.email` must now read
+      `req.body.submission.email`. `fb_dashboardUrl` has no replacement — use `form.alias` plus
+      `eventId`.
+    breaking: true
+    migration_documented: true
+    source: https://formboost.app/docs/http-webhook
+    note: >-
+      Shipped as a breaking change with migration guidance in the docs, but with no versioning,
+      no deprecation window and no Sunset header. See lifecycle/formboost-lifecycle.yml.
+testing:
+  guidance: >-
+    The docs recommend webhook.site to inspect the exact payload before wiring a production
+    endpoint, and the Integrations tab has a "Send Test" button that fires a form.submission.test
+    delivery.
+  docs: https://formboost.app/docs/http-webhook
