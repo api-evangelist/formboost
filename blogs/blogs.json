@@ -1,0 +1,14 @@
+{
+  "repo": "formboost",
+  "feeds": [
+    {
+      "source": "https://formboost.app/faq",
+      "feed_url": "https://formboost.app/faq",
+      "title": "",
+      "saved": 0,
+      "method": "none"
+    }
+  ],
+  "post_count": 0,
+  "fetched": "2026-09-06T19:17:18Z"
+}

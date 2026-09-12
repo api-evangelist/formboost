@@ -68,6 +68,8 @@ maintainers:
     url: https://formboost.app
     email: support@formboost.app
 common:
+  - type: Website
+    url: https://www.formboost.app/
   - type: Documentation
     url: https://formboost.app/docs
   - type: DeveloperPortal
