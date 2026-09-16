@@ -9,6 +9,19 @@ created: '2026-09-02'
 modified: '2026-09-02'
 specificationVersion: '0.21'
 tags:
+  - Forms
+  - form-backend
+  - HTML Forms
+  - Serverless
+  - Static Sites
+  - React
+  - Next.js
+  - Vue
+  - Webhook
+  - No-Code
+  - Developer Tools
+  - Spam Filtering
+tags_raw:
   - forms
   - form-backend
   - html-forms
@@ -30,6 +43,19 @@ apis:
     humanURL: https://formboost.app/docs/api-reference-and-config
     baseURL: https://formboost.app
     tags:
+      - Forms
+      - form-backend
+      - HTML Forms
+      - Serverless
+      - Static Sites
+      - React
+      - Next.js
+      - Vue
+      - Webhook
+      - No-Code
+      - Developer Tools
+      - Spam Filtering
+    tags_raw:
       - forms
       - form-backend
       - html-forms
