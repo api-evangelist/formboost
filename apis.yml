@@ -41,7 +41,6 @@ apis:
       form-encoded submissions. Returns 202 to JSON clients and 302 to HTML form posts. Discovery via a confirmed
       llms.txt.
     humanURL: https://formboost.app/docs/api-reference-and-config
-    baseURL: https://formboost.app
     tags:
       - Forms
       - form-backend
